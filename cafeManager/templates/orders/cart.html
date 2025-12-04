@@ -1,0 +1,76 @@
+{% extends 'orders/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4  text-center">Your Cart</h2>
+
+    {% if items %}
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+              <th>Image</th>
+              <th>Item</th>
+              <th>Unit Price</th>
+              <th>Quantity</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+        </thead>
+  <tbody>
+    {% for item in cart.items.all %}
+    <tr>
+      <td><img src="{{ item.item.image.url }}" width="60"></td>
+      <td>{{ item.item.name }}         {% if item.item.wholesale_price %}
+    <p class="mb-1 text-muted" style="font-size: 0.9rem;">
+       <b>wholesale (Qty > {{ item.item.wholesale_qty }}):</b>
+        <span class="fw-semibold text-success">₽ {{ item.item.wholesale_price|floatformat:2 }}</span>
+        <span class="text-danger">(-{{ item.item.discount_percentage }}%)</span>
+    </p>
+    {% endif %}
+      </td>
+        <td>
+            {% if item.quantity >= item.item.wholesale_qty and item.item.wholesale_price %}
+                <del>${{ item.item.price }}</del> <br>
+                <strong>${{ item.effective_unit_price }}</strong> <span class="badge bg-success">Wholesale Price</span>
+            {% else %}
+                ${{ item.effective_unit_price }}
+            {% endif %}
+        </td>
+      <td>
+        <form action="{% url 'update_cart_quantity' item.item.id 'decrement' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary">–</button>
+        </form>
+        {{ item.quantity }}
+        <form action="{% url 'update_cart_quantity' item.item.id 'increment' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+        </form>
+      </td>
+      <td>${{ item.total_price }}</td>
+      <td>
+        <form action="{% url 'remove_from_cart' item.item.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="text-center">Your cart is empty.</td></tr>
+    {% endfor %}
+  </tbody>
+    </table>
+
+    <h4 class="text-right">Grand Total: <strong>${{ grand_total }}</strong></h4>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+  {% if cart.items.all %}
+  <div class="text-end">
+    <a href="{% url 'checkout' %}" class="">
+        <button class="checkout-btn">Checkout</button>
+    </a>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

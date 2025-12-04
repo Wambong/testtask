@@ -1,0 +1,41 @@
+{% extends "orders/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="container-login">
+        <div class="heading-login">Create an Account</div>
+        <form method="post" class="form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {{ form.email.errors }}
+            <input required class="input" type="email" name="{{ form.email.name }}" id="email"
+                   placeholder="E-mail" value="{{ form.email.value|default:'' }}">
+
+            {{ form.full_name.errors }}
+            <input required class="input" type="text" name="{{ form.full_name.name }}" id="full_name"
+                   placeholder="Full Name" value="{{ form.full_name.value|default:'' }}">
+
+            {{ form.password1.errors }}
+            <input required class="input" type="password" name="{{ form.password1.name }}" id="password1"
+                   placeholder="Password">
+
+            {{ form.password2.errors }}
+            <input required class="input" type="password" name="{{ form.password2.name }}" id="password2"
+                   placeholder="Confirm Password">
+
+            <input class="login-button" type="submit" value="Register">
+        </form>
+
+        <span class="agreement">
+            Already have an account? <a href="{% url 'login' %}" class="highlight-link">Sign In</a>
+        </span>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+<!-- templates/dashboard/base.html -->
+{% extends "orders/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar" id="dashboardSidebar">
+        <div class="dashboard-sidebar-header">
+            <h3>Dashboard</h3>
+            <button class="btn btn-sm btn-outline-secondary dashboard-toggle-sidebar" id="dashboardToggleSidebar">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="dashboard-sidebar-menu">
+            <div class="dashboard-user-info">
+                <img src="{{ user.get_profile_pic_url }}"
+                     alt="User Avatar"
+                     class="dashboard-user-avatar rounded-circle"
+                     onerror="this.onerror=null; this.src='{% static 'images/default-avatar.png' %}'">
+                <p>{{ user.email }}</p>
+            </div>
+
+            <ul class="dashboard-nav flex-column">
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link active" href="{% url 'dashboard' %}">
+                        <i class="bi bi-speedometer2"></i> <span class="dashboard-nav-text">Overview</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'user_orders' %}">
+                        <i class="bi bi-bag-check"></i> <span class="dashboard-nav-text">My Orders</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'profile' %}">
+                        <i class="bi bi-person-circle"></i> <span class="dashboard-nav-text">Profile</span>
+                    </a>
+                </li>
+                {% if user.is_staff %}
+                <li class="dashboard-nav-divider">Admin</li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'all_orders' %}">
+                        <i class="bi bi-list-check"></i> <span class="dashboard-nav-text">All Orders</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'category_management' %}">
+                        <i class="bi bi-tags"></i> <span class="dashboard-nav-text">Categories</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'tag_management' %}">
+                        <i class="bi bi-tag"></i> <span class="dashboard-nav-text">Tags</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'add_item' %}">
+                        <i class="bi bi-plus-circle"></i> <span class="dashboard-nav-text">Add Item</span>
+                    </a>
+                </li>
+                <li class="dashboard-nav-item">
+                    <a class="dashboard-nav-link" href="{% url 'manage_users' %}">
+                        <i class="bi bi-people"></i> <span class="dashboard-nav-text">Manage Users</span>
+                    </a>
+                </li>
+
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-main-content" id="dashboardMainContent">
+        {% block dashboard_content %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSidebar = document.getElementById('dashboardToggleSidebar');
+    const sidebar = document.getElementById('dashboardSidebar');
+    const mainContent = document.getElementById('dashboardMainContent');
+
+    function toggleDashboardSidebar() {
+        sidebar.classList.toggle('dashboard-sidebar-collapsed');
+        mainContent.classList.toggle('dashboard-main-content-expanded');
+
+        // Change the icon
+        const icon = toggleSidebar.querySelector('i');
+        if (sidebar.classList.contains('dashboard-sidebar-collapsed')) {
+            icon.classList.remove('bi-chevron-left');
+            icon.classList.add('bi-chevron-right');
+        } else {
+            icon.classList.remove('bi-chevron-right');
+            icon.classList.add('bi-chevron-left');
+        }
+
+        // Save state
+        localStorage.setItem('dashboardSidebarCollapsed', sidebar.classList.contains('dashboard-sidebar-collapsed'));
+    }
+
+    // Event listener for toggle button
+    if (toggleSidebar) {
+        toggleSidebar.addEventListener('click', toggleDashboardSidebar);
+    }
+
+    // Check for saved state
+    const savedState = localStorage.getItem('dashboardSidebarCollapsed');
+    if (savedState === 'true') {
+        if (sidebar && mainContent) {
+            sidebar.classList.add('dashboard-sidebar-collapsed');
+            mainContent.classList.add('dashboard-main-content-expanded');
+
+            if (toggleSidebar) {
+                const icon = toggleSidebar.querySelector('i');
+                icon.classList.remove('bi-chevron-left');
+                icon.classList.add('bi-chevron-right');
+            }
+        }
+    }
+
+    // Close sidebar when clicking on a nav link in mobile view
+    const navLinks = document.querySelectorAll('.dashboard-nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                toggleDashboardSidebar();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

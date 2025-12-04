@@ -1,0 +1,48 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+       <link rel="stylesheet" href="{% static 'css/test.css' %}">
+
+</head>
+<body>
+  <div class="grid-container col-md-3 mb-3">
+    {% for item in items %}
+      <div class="card col-md-3 mb-3">
+        <div class="image_container">
+          {% if item.image %}
+            <img class="image image-fit" src="{{ item.image.url }}" alt="{{ item.name }}">
+          {% else %}
+            <svg class="image image-fit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="..."/></svg>
+          {% endif %}
+        </div>
+        <div class="title">
+          <span>{{ item.name }}</span>
+        </div>
+        <div class="size">
+          <span>Size</span>
+          <ul class="list-size">
+            <li class="item-list"><button class="item-list-button">37</button></li>
+            <li class="item-list"><button class="item-list-button">38</button></li>
+            <li class="item-list"><button class="item-list-button">39</button></li>
+            <li class="item-list"><button class="item-list-button">40</button></li>
+            <li class="item-list"><button class="item-list-button">41</button></li>
+          </ul>
+        </div>
+        <div class="action">
+          <div class="price">
+            <span>${{ item.price }}</span>
+          </div>
+          <button class="cart-button">
+            <span>Add to cart</span>
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

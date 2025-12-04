@@ -1,0 +1,114 @@
+
+{% extends "dashboard/base.html" %}
+{% load crispy_forms_tags %}
+{% block dashboard_content %}
+  <div class="card-header text-center">
+        <h1>Edit</h1>
+  </div>
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li><strong>{{ field }}:</strong> {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+             {{ form.media }}
+            <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">name</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.category.id_for_label }}" class="form-label">category</label>
+                <div class="input-group">
+
+                    {{ form.category}}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.price.id_for_label }}" class="form-label">price</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    {{ form.price }}
+                </div>
+            </div>
+            <div class="mb-3">
+    <label for="{{ form.stock.id_for_label }}" class="form-label">Stock</label>
+    {{ form.stock }}
+</div>
+
+            <div class="mb-3">
+                <label for="{{ form.brand.id_for_label }}" class="form-label">Brand</label>
+                {{ form.brand }}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.wholesale_qty.id_for_label }}" class="form-label">wholesale qty</label>
+                <div class="input-group">
+<!--                    <span class="input-group-text">$</span>-->
+                    {{ form.wholesale_qty }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.discount_percentage.id_for_label }}" class="form-label">discount percentage</label>
+                <div class="input-group">
+                    <span class="input-group-text">%</span>
+                    {{ form.discount_percentage }}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.body.id_for_label }}" class="form-label">Description</label>
+                {{ form.body }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tags</label>
+                {{ form.tags }}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.image.id_for_label }}" class="form-label">item image</label>
+                {{ form.image }}
+                {% if item.image %}
+                    <div class="mt-2">
+                        <img src="{{ item.image.url }}" class="img-thumbnail" alt="{{ item.name }}" style="max-width: 150px;">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+
+                <label for="id_additional_images">Upload additional images:</label>
+                <input type="file" name="additional_images" id="id_additional_images" multiple>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">save changes</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">cancel</a>
+            </div>
+        </form>
+{% if item.images.exists %}
+    <h4 class="mt-4">Existing Additional Images:</h4>
+    <div class="row">
+        {% for img in item.images.all %}
+            <div class="col-6 col-md-3 mb-3 text-center">
+                <img src="{{ img.image.url }}" class="img-fluid rounded border"
+                     style="object-fit: cover; width: 100%; height: 150px;">
+                <form method="POST" action="{% url 'delete_item_image' img.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger mt-2">Delete</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+
+{% block dashboard_content %}
+<div class="container mt-4">
+    <h2>User Management</h2>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+<tbody>
+    {% for u in users %}
+    <tr>
+        <td>{{ u.email }}</td>
+        <td>{{ u.full_name }}</td>
+        <td>{{ u.date_joined|date:"Y-m-d H:i" }}</td>
+
+        <td>
+            {% if u.is_active %}
+                <span class="badge bg-success">Active</span>
+            {% else %}
+                <span class="badge bg-danger">Inactive</span>
+            {% endif %}
+        </td>
+
+        <td>
+            <!-- Activate/Deactivate -->
+            <a href="{% url 'toggle_user_status' u.id %}" class="btn btn-sm btn-warning">
+                {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+            </a>
+        </td>
+
+        <td>
+            <!-- Delete -->
+            <a href="{% url 'delete_user' u.id %}" class="btn btn-sm btn-danger"
+               onclick="return confirm('Are you sure? This cannot be undone.');">
+                Delete
+            </a>
+        </td>
+
+        <td>
+            <!-- Role Management -->
+            <form method="POST" action="{% url 'update_user_role' u.id %}">
+                {% csrf_token %}
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="role" value="user"
+                        {% if not u.is_staff and not u.is_superuser %}checked{% endif %}>
+                    <label class="form-check-label">Normal User</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="role" value="staff"
+                        {% if u.is_staff and not u.is_superuser %}checked{% endif %}>
+                    <label class="form-check-label">Staff</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="role" value="admin"
+                        {% if u.is_superuser %}checked{% endif %}>
+                    <label class="form-check-label">Admin</label>
+                </div>
+
+                <button class="btn btn-primary btn-sm mt-2">Save</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+    </table>
+</div>
+
+
+
+{% endblock %}

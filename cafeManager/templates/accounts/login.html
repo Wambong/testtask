@@ -1,0 +1,40 @@
+{% extends "orders/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+<div class="container-login">
+    <div class="heading-login">Sign In</div>
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {{ form.username.errors }}
+        <input required class="input" type="email" name="{{ form.username.name }}" id="email"
+               placeholder="E-mail" value="{{ form.username.value|default:'' }}">
+
+        {{ form.password.errors }}
+        <input required class="input" type="password" name="{{ form.password.name }}" id="password"
+               placeholder="Password">
+        <div class="d-flex align-items-center mt-2">
+            <input type="checkbox" name="remember_me" id="remember_me">
+            <label for="remember_me" class="ms-2">Remember Me</label>
+        </div>
+
+        <span class="forgot-password"><a href="{% url 'password_reset' %}">Forgot Password?</a></span>
+
+        <input class="login-button" type="submit" value="Sign In">
+    </form>
+
+    <span class="agreement">
+        Don't Have an account? |
+        <a href="{% url 'register' %}" class="highlight-link">Register</a>
+    </span>
+</div>
+    </div>
+{% endblock %}

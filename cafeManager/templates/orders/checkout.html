@@ -1,0 +1,58 @@
+{% extends 'orders/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">Checkout</h2>
+
+  <div class="row container-checkout">
+        <!-- Checkout Form Column -->
+    <div class="col-lg-6 col-md-6 mb-4 ">
+      <h4>Your Details</h4>
+      <form method="post" action="{% url 'checkout' %}" class="form" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+      </form>
+    </div>
+    <!-- Order Summary Column -->
+    <div class="col-lg-6 col-md-6 mb-4 ">
+      <h4>Order Summary</h4>
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th>Image</th>
+            <th>Item</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart.items.all %}
+          <tr>
+             <td><img src="{{ item.item.image.url }}" width="60"></td>
+            <td>{{ item.item.name }}</td>
+<!--              <td>{{ item.item.price }}</td>-->
+            <td>
+
+              {% if item.quantity >= item.item.wholesale_qty and item.item.wholesale_price %}
+                  <del>${{ item.item.price }}</del> <br>
+                  <strong>${{ item.effective_unit_price }}</strong>
+              {% else %}
+                  ${{ item.effective_unit_price }}
+              {% endif %}
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.total_price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p><strong>Grand Total:</strong> ${{ cart.total_price }}</p>
+    </div>
+
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+       <link rel="stylesheet" href="{% static 'css/test.css' %}">
+</head>
+<body>
+
+<div class="magnetic-glow-demo">
+	<div class="controls-container">
+		<div class="controls">
+			<button class="control-btn active" data-effect="magnetic">Magnetic Glow</button>
+			<button class="control-btn" data-effect="outline">Outline Glow</button>
+			<button class="control-btn" data-effect="pulse">Pulse Glow</button>
+		</div>
+	</div>
+
+	<div class="card-grid">
+		<!-- Product Card -->
+       {% for item in items %}
+		<div class="glow-card" data-glow-color="#5D8BF4">
+			<div class="glow-effect"></div>
+			<div class="card-content">
+				<div class="card-img">
+					<img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+					<div class="card-badge">-15%</div>
+				</div>
+				<div class="card-body">
+					<div class="card-tag">{{ item.name }}</div>
+					<h2 class="card-title">{{ item.name }}</h2>
+					<div class="card-rating">★★★★<span class="star-outline">★</span> <span class="rating-count">4.2</span></div>
+					<p class="card-price"><span class="price-original">$210</span> ${{ item.price }}</p>
+					<div class="card-actions">
+						<a href="https://calculatequick.com" class="card-btn primary">Add to Cart</a>
+					</div>
+				</div>
+			</div>
+		</div>
+        {% endfor %}
+	</div>
+
+</div>
+<script src="{% static 'js/test.js' %}"></script>
+
+</body>
+</html>

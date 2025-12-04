@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h2 class="hero-title">Discover Your Perfect Style</h2>
+        <p class="hero-subtitle">Curated collection of premium fashion and lifestyle products</p>
+        <button class="btn-primary">Shop Now</button>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop&crop=center" alt="Hero fashion" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-products" id="products">
+    <div class="container">
+      <h2 class="section-title">Featured Products</h2>
+      <div class="products-grid">
+
+
+{% for item in items %}
+  <div class="product-card">
+    <div class="product-image">
+      {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+      {% else %}
+        <img src="https://via.placeholder.com/300" alt="No Image" />
+      {% endif %}
+      <div class="product-overlay">
+        <a href="{% url 'product_detail' item.id %}"><button class="btn-secondary">Quick View</button></a>
+
+      </div>
+    </div>
+    <div class="product-info">
+      <h3 class="product-name">{{ item.name|truncatewords:7 }}</h3>
+      <p class="product-category">
+        {% if item.category %}
+          {{ item.category.name }}
+        {% else %}
+          Uncategorized
+        {% endif %}
+      </p>
+      <div class="product-price">
+        <span class="price-current">${{ item.price }}</span>
+      </div>
+      <div class="product-rating">
+        <div class="stars">★★★★☆</div>
+        <span class="rating-count">(89)</span>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="categories" id="categories">
+    <div class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="categories-grid">
+        <div class="category-card">
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=300&fit=crop&crop=center" alt="Women's Fashion" />
+          <div class="category-overlay">
+            <h3 class="category-name">Women's Fashion</h3>
+            <p class="category-count">250+ Products</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=400&h=300&fit=crop&crop=center" alt="Men's Fashion" />
+          <div class="category-overlay">
+            <h3 class="category-name">Men's Fashion</h3>
+            <p class="category-count">180+ Products</p>
+          </div>
+        </div>
+
+        <div class="category-card">
+          <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop&crop=center" alt="Accessories" />
+          <div class="category-overlay">
+            <h3 class="category-name">Accessories</h3>
+            <p class="category-count">120+ Products</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+          <!-- Newsletter -->
+  <section class="newsletter">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2 class="newsletter-title">Stay Updated</h2>
+        <p class="newsletter-subtitle">Get the latest trends and exclusive offers delivered to your inbox</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Enter your email address" class="newsletter-input" />
+          <button type="submit" class="btn-primary">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

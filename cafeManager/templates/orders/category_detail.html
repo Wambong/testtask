@@ -1,0 +1,48 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<div class="container-fluid px-2 mt-5">
+    <h2 class="text-center mb-4">{{ category.name }}</h2>
+
+    {% if items %}
+        <div class="row">
+            {% for item in items %}
+                <div class="col-md-3 mb-3">
+                    <a href="{% url 'item_detail' item.id %}" style="text-decoration: none; color: inherit;">
+                        <div class="card h-100">
+                            <div style="position: relative; width: 100%; padding-top: 66.66%;">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}"
+                                         alt="{{ item.name }}"
+                                         class="card-img-top image-fit">
+                                {% else %}
+                                    <div class="text-center py-5" style="background-color: #f8f9fa; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                                        No image
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.name }}</h5>
+                            </div>
+                            <div class="card-body d-flex justify-content-between align-items-center px-2 py-1">
+                                <span class="text-primary fw-bold" style="font-size: 1.5rem;">₽ {{ item.price }}</span>
+                                <a href="{% url 'add_to_cart' item.id %}" class="" style="font-size: 1.5rem;">
+                             <button class="button">
+                                 Shop
+                                 <svg class="cartIcon" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+                            </button>
+                                </a>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% if forloop.counter|divisibleby:4 %}
+                    </div><div class="row">
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center mt-4">No items found in this category.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,316 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+
+<div class="container mt-4" style="background-color: #F8FAFC;">
+    <div class="card mb-4">
+<div {% if item.image %}
+<div class="zoom-wrapper position-relative w-100 d-flex justify-content-center mb-3" style="z-index: 1;">
+    <div style="position: relative; width: 100%; max-width: 600px; aspect-ratio: 3 / 2; border-radius: 5px; overflow: hidden;">
+        <img id="product-image" src="{{ item.image.url }}"
+             alt="{{ item.name }}"
+             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    object-fit: contain; border-radius: 5px; cursor: zoom-in;">
+    </div>
+
+    <!-- Zoom preview (will float above) -->
+    <div id="zoom-preview" style="
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        background-repeat: no-repeat;
+        background-color: white;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        display: none;
+        z-index: 1000;
+        pointer-events: none;
+        overflow: hidden;
+        top: -320px; /* Above the image container */
+        left: 70%;
+        transform: translateX(-90%);
+    "></div>
+</div>
+{% endif %}
+        <div class="card-body">
+            <h2 class="card-title"  style="padding-left: 25px; padding-right: 10px;">{{ item.name }}</h2>
+            <p class="card-text"  style="padding-left: 25px; padding-right: 10px;"><strong>Price:</strong> ₽ {{ item.price }}</p>
+             <p class="card-text"  style="padding-left: 25px; padding-right: 10px;"><strong>description</strong>  {{ item.body|safe }}</p>
+
+            {% if item.tags.exists %}
+                <p class="card-text">
+                    <strong>Tags:</strong>
+                    {% for tag in item.tags.all %}
+                        <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                    {% endfor %}
+                </p>
+            {% endif %}
+            <div class="rating-star" style="padding-left: 25px;">
+                <span>
+                    <i class="fa fa-star{% if item.averageReview < 0.5 %}-o{% elif item.averageReview >= 0.5 and item.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if item.averageReview < 1.5 %}-o{% elif item.averageReview >= 1.5 and item.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if item.averageReview < 2.5 %}-o{% elif item.averageReview >= 2.5 and item.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if item.averageReview < 3.5 %}-o{% elif item.averageReview >= 3.5 and item.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if item.averageReview < 4.5 %}-o{% elif item.averageReview >= 4.5 and item.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <span>{{item.countReview}} Reviews</span>
+                </span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                            {% if item.stock > 0 %}
+                                <a href="{% url 'add_to_cart' item.id %}">
+                                    <button class="button">
+                                        Shop
+                                      <svg class="cartIcon" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+                                    </button>
+                                </a>
+                            {% else %}
+                                <button class="button" style="cursor: not-allowed; opacity: 0.6;  white-space: nowrap; padding: 0.5rem 1rem; min-width: 120px;" disabled>
+                                   <small class="badge bg-danger">Out of Stock</small>
+                                   <svg class="cartIcon" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+                                </button>
+                            {% endif %}
+             {% if request.user.is_superuser or request.user.is_staff %}
+                <a href="{% url 'edit_item' item.id %}" class="btn btn-primary">Update item</a>
+            {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+
+    {% if item.images.all %}
+        <h4>Additional Images:</h4>
+        <div class="row">
+            {% for img in item.images.all %}
+                <div class="col-6 col-md-3 mb-3">
+                    <img src="{{ img.image.url }}" alt="Extra Image"
+                         class="img-fluid border rounded" style="object-fit: contain; width: 100%; height: 150px;">
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <br>
+    	<div class="row">
+		<div class="col-md-9 details">
+
+
+
+			<form action="{% url 'submit_review' item.id %}" method="POST">
+				{% csrf_token %}
+				<h5>Write a review</h5>
+
+
+				<div>
+					<!-- Rating stars -->
+					<label>How do you rate this item?</label>
+					<br>
+					<div class="rate">
+						<input type="radio" name="rating" id="rating10" value="5" required /><label for="rating10" title="5"></label>
+						<input type="radio" name="rating" id="rating9" value="4.5" required /><label for="rating9" title="4.5" class="half"></label>
+						<input type="radio" name="rating" id="rating8" value="4" required /><label for="rating8" title="4"></label>
+						<input type="radio" name="rating" id="rating7" value="3.5" required /><label for="rating7" title="3.5" class="half"></label>
+						<input type="radio" name="rating" id="rating6" value="3" required /><label for="rating6" title="3"></label>
+						<input type="radio" name="rating" id="rating5" value="2.5" required /><label for="rating5" title="2.5" class="half"></label>
+						<input type="radio" name="rating" id="rating4" value="2" required /><label for="rating4" title="2"></label>
+						<input type="radio" name="rating" id="rating3" value="1.5" required /><label for="rating3" title="1.5" class="half"></label>
+						<input type="radio" name="rating" id="rating2" value="1" required /><label for="rating2" title="1"></label>
+						<input type="radio" name="rating" id="rating1" value="0.5" required /><label for="rating1" title="0.5" class="half"></label>
+					</div>
+<br>
+					Header:
+					<input type="text" class="form-control" name="subject">
+					<br>
+					Review:
+					<textarea name="review" rows="4" class="form-control"></textarea>
+					<br>
+                    <input type="submit" value="Send review" class="btn btn-primary">
+
+
+				</div>
+
+			</form>
+<br>
+<header class="section-heading details">
+<h3>Client Reviews </h3>
+<div class="rating-star">
+	<span>
+		<i class="fa fa-star{% if item.averageReview < 0.5 %}-o{% elif item.averageReview >= 0.5 and item.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+		<i class="fa fa-star{% if item.averageReview < 1.5 %}-o{% elif item.averageReview >= 1.5 and item.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+		<i class="fa fa-star{% if item.averageReview < 2.5 %}-o{% elif item.averageReview >= 2.5 and item.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+		<i class="fa fa-star{% if item.averageReview < 3.5 %}-o{% elif item.averageReview >= 3.5 and item.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+		<i class="fa fa-star{% if item.averageReview < 4.5 %}-o{% elif item.averageReview >= 4.5 and item.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+<span>{{item.countReview}} Reviews</span>
+		</span>
+</div>
+
+</header>
+
+{% for review in reviews %}
+    <article class="box mb-3 details">
+        <div class="icontext w-100">
+            <div class="text">
+                <span class="date text-muted float-md-right">{{review.updated_at}}</span>
+                <h6 class="mb-1">
+                    {% if review.user %}
+                        {{review.user.username}}
+                    {% else %}
+                        Anonymous User
+                    {% endif %}
+                </h6>
+                <div class="rating-star">
+                    <span>
+                        <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}" aria-hidden="true"></i>
+                        <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o {% endif %}" aria-hidden="true"></i>
+                        <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o {% endif %}" aria-hidden="true"></i>
+                        <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o {% endif %}" aria-hidden="true"></i>
+                        <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o {% endif %}" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3">
+            <h6>{{review.subject}}</h6>
+            <p>{{review.review}}</p>
+        </div>
+    </article>
+{% endfor %}
+
+
+		</div> <!-- col.// -->
+	</div> <!-- row.// -->
+</div>
+
+{% if related_items %}
+<div class="container-fluid mt-2">
+    <h3>Related Items</h3>
+    <div class="row">
+        {% for related in related_items %}
+            <div class="col-md-3 mb-3">
+                <a href="{% url 'item_detail' related.id %}" style="text-decoration: none; color: inherit;">
+                    <div class="card h-100">
+                        <div style="position: relative; width: 100%; padding-top: 66.66%;">
+                            {% if related.image %}
+                                <img src="{{ related.image.url }}" alt="{{ related.name }}"
+                                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"
+                                     class="card-img-top">
+                            {% else %}
+                                <div class="text-center py-5" style="background-color: #f8f9fa; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                                    No image
+                                </div>
+                            {% endif %}
+                                                                <!-- Stock badge -->
+                        <span style="position: absolute; top: 5px; left: 5px; z-index: 10;  background-color: lightblue;"
+                              class="badge {% if related.stock > 0 %}text-info{% else %}text-danger{% endif %}">
+                            {% if related.stock > 0 %}In Stock{% else %}Out of Stock{% endif %}
+                        </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related.name }}</h5>
+                             <a class="text-primary fw-bold" style="font-size: 1.1rem;">₽ {{ related.price }}</a>
+                        </div>
+                        <div class="card-body-rating d-flex justify-content-between align-items-center">
+                            <div class="rating-star">
+                                <span>
+                                    <i class="fa fa-star{% if related.averageReview < 0.5 %}-o{% elif related.averageReview >= 0.5 and related.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if related.averageReview < 1.5 %}-o{% elif related.averageReview >= 1.5 and related.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if related.averageReview < 2.5 %}-o{% elif related.averageReview >= 2.5 and related.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if related.averageReview < 3.5 %}-o{% elif related.averageReview >= 3.5 and related.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if related.averageReview < 4.5 %}-o{% elif related.averageReview >= 4.5 and related.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex justify-content-between align-items-center px-2 py-1">
+
+                            <br>
+                            {% if related.wholesale_price %}
+                            <p class="mb-1 text-muted" style="font-size: 0.9rem;">
+                               <b>(Qty > {{ related.wholesale_qty }}):</b>
+                                <span class="fw-semibold text-success">₽ {{ related.wholesale_price|floatformat:2 }}</span>
+                                <span class="text-danger">(-{{ related.discount_percentage }}%)</span>
+                            </p>
+                            {% endif %}
+                             {% if related.stock > 0 %}
+                            <a href="{% url 'add_to_cart' related.id %}" class="">
+                                   <button class="button">
+                                        Shop
+                                      <svg class="cartIcon" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+                                    </button>
+                            </a>
+                            {% else %}
+                                <button class="button" style="cursor: not-allowed; opacity: 0.6;  white-space: nowrap; padding: 0.5rem 1rem; min-width: 120px;" disabled>
+                                   <small class="badge bg-danger">Out of Stock</small>
+                                   <svg class="cartIcon" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path></svg>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const img = document.getElementById('product-image');
+    const preview = document.getElementById('zoom-preview');
+
+    if (img && preview) {
+        // Preload image
+        const hiResImg = new Image();
+        hiResImg.src = img.src;
+
+        // Calculate zoom factor (2x zoom)
+        const zoomFactor = 2;
+
+    img.addEventListener('mousemove', function(e) {
+    if (!hiResImg.complete) return;
+
+    preview.style.display = 'block';
+
+    const imgRect = img.getBoundingClientRect();
+    const containerRect = img.parentElement.getBoundingClientRect();
+    const previewWidth = 300;
+    const previewHeight = 300;
+
+    const x = e.clientX - imgRect.left;
+    const y = e.clientY - imgRect.top;
+
+    const srcX = (x / imgRect.width) * hiResImg.naturalWidth;
+    const srcY = (y / imgRect.height) * hiResImg.naturalHeight;
+
+    // Decide whether to place the preview on the right or left based on viewport space
+    const spaceRight = window.innerWidth - containerRect.right;
+    const spaceLeft = containerRect.left;
+
+    let previewLeft;
+    if (spaceRight > previewWidth + 20) {
+        // Enough space on the right
+        previewLeft = containerRect.right + 20;
+    } else if (spaceLeft > previewWidth + 20) {
+        // Place to the left of the image
+        previewLeft = containerRect.left - previewWidth - 20;
+    } else {
+        // Default fallback: place it below the image
+        previewLeft = containerRect.left;
+        preview.style.top = (containerRect.bottom + 10) + 'px';
+    }
+
+    preview.style.left = `${previewLeft}px`;
+    preview.style.top = (window.scrollY + e.clientY - previewHeight / 2) + 'px';
+
+    preview.style.backgroundImage = `url('${hiResImg.src}')`;
+    preview.style.backgroundSize = `${hiResImg.naturalWidth * zoomFactor}px ${hiResImg.naturalHeight * zoomFactor}px`;
+    preview.style.backgroundPosition = `-${srcX * zoomFactor - previewWidth / 2}px -${srcY * zoomFactor - previewHeight / 2}px`;
+});
+
+        img.addEventListener('mouseleave', function() {
+            preview.style.display = 'none';
+        });
+    }
+});
+</script>
+{% endblock %}

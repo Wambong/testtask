@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="container text-center mt-5">
+    <h1 class="display-4 text-danger">403 - Forbidden</h1>
+    <p class="lead mt-3">You do not have permission to access this page.</p>
+        <img src="{% static 'images/403.jpg' %}" alt="Not Found" class="img-fluid mt-4" style="max-width:300px;">
+
+    <div class="mt-4">
+        <a href="{% url 'home' %}" class="btn btn-primary">Go Back Home</a>
+    </div>
+</div>
+{% endblock %}
